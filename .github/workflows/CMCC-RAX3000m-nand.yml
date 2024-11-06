@@ -143,6 +143,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Debug created directory contents
+      run: |
+        echo "Directory structure:"
+        ls -R ./artifact/${{ env.RELEASE_NAME }}
+        tree ./artifact/${{ env.RELEASE_NAME }}
+        echo "Contents of ./artifact/:"
+        ls -R ./artifact/
 
     - name: Upload Firmware and Packages to GitHub Release
       uses: actions/upload-release-asset@v1
@@ -153,11 +160,3 @@ jobs:
         asset_content_type: application/octet-stream
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Debug created directory contents
-      run: |
-        echo "Directory structure:"
-        ls -R ./artifact/${{ env.RELEASE_NAME }}
-        tree ./artifact/${{ env.RELEASE_NAME }}
-        echo "Contents of ./artifact/:"
-        ls -R ./artifact/
