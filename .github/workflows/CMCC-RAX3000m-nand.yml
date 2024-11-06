@@ -108,71 +108,45 @@ jobs:
     - name: Create versioned release directory
       working-directory: ./openwrt
       run: |
-        # 创建版本目录（包括编译日期）
         RELEASE_NAME="MzWrt-CMCC-RAX3000M-$(date +'%Y%m%d')"
         echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
         mkdir -p ./artifact/$RELEASE_NAME
-        # 打包 packages 文件夹
-        tar -czf ./artifact/$RELEASE_NAME/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
-        # 删除 packages 文件夹
-        rm -rf ./bin/targets/mediatek/filogic/packages
-        # 将整个目录下的文件复制到版本目录中
-        cp -r ./bin/targets/mediatek/filogic/* ./artifact/$RELEASE_NAME/
-
-    - name: Create versioned release directory
-      working-directory: ./openwrt
-      run: |
-        # 创建版本目录（包括编译日期）
-        RELEASE_NAME="MzWrt-CMCC-RAX3000M-$(date +'%Y%m%d')"
-        mkdir -p ./artifact/$RELEASE_NAME
-        echo "======================="
         ls ./artifact
-        echo "======================="
-        pwd
-        echo "======================="
-        tree ./artifact
-        echo "======================="
-        # 打包 packages 文件夹
         tar -czf ./artifact/$RELEASE_NAME/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
-        # 删除 packages 文件夹
-        rm -rf ./bin/targets/mediatek/filogic/packages
-        # 将整个目录下的文件复制到版本目录中
         cp -r ./bin/targets/mediatek/filogic/* ./artifact/$RELEASE_NAME/
         echo "Created directory and files in ./artifact/$RELEASE_NAME"
-        ls -R ./artifact/$RELEASE_NAME
+        echo "======================="
+        tree ./artifact/$RELEASE_NAME
+        echo "======================="
+        rm -rf ./artifact/$RELEASE_NAME/packages
 
     - name: Generate Tag & Release Name
       id: generate_name
       run: |
         time=$(date +%Y%m%d%H%M%S)
         release_tag="$time"
-        release_name="MzWrt-CMCC-RAX3000M-$(date +%Y%m%d)"
-        echo "RELEASE_TAG=$release_tag" >> $GITHUB_ENV  # 设置为环境变量
-        echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV  # 设置为环境变量
+        release_name="MzWrt-CMCC-RAX300M-$(date +%Y%m%d)"
+        echo "RELEASE_TAG=$release_tag" >> $GITHUB_ENV
+        echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
 
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "${{ env.RELEASE_TAG }}"  # 使用 generate_name 步骤生成的 release_tag
-        release_name: "${{ env.RELEASE_NAME }}"  # 使用 generate_name 步骤生成的 release_name
+        tag_name: "${{ env.RELEASE_TAG }}"
+        release_name: "${{ env.RELEASE_NAME }}"
         body: "This is the release of OpenWrt firmware for RAX3000M"
         draft: false
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Check generated files
-      run: |
-        echo "Listing files in ./artifact:"
-        ls -R ./artifact/
-
     - name: Upload Firmware and Packages to GitHub Release
       uses: actions/upload-release-asset@v1
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}  # 从 create-release 步骤获取 upload_url
-        asset_path: ./artifact/${{ env.RELEASE_NAME }}/  # 使用生成的 RELEASE_NAME 变量
-        asset_name: ${{ env.RELEASE_NAME }}  # 使用生成的 RELEASE_NAME 变量
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifact/${{ env.RELEASE_NAME }}/
+        asset_name: ${{ env.RELEASE_NAME }}
         asset_content_type: application/octet-stream
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
