@@ -132,12 +132,12 @@ jobs:
         tree ./bin/targets/mediatek/filogic
         echo "======================="
         # 打包 packages 文件夹
-        tar -czf ./artifact/$RELEASE_NAME/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
+        tar -czf ./artifact/$RELEASE_NAME/packages.tar.gz -C bin/targets/mediatek/filogic/ packages
         # 删除 packages 文件夹
         rm -rf ./bin/targets/mediatek/filogic/packages
         # 将整个目录下的文件复制到版本目录中
         cp -r ./bin/targets/mediatek/filogic/* ./artifact/$RELEASE_NAME/
-        echo "Created directory and files in ./openwrt/artifact/$RELEASE_NAME"
+        echo "Created directory and files in ./artifact/$RELEASE_NAME"
         ls -R ./artifact/$RELEASE_NAME
 
     - name: Generate Tag & Release Name
