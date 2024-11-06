@@ -84,8 +84,12 @@ jobs:
 
         mkdir -p ./bin/targets/mediatek/filogic/ && echo "测试" > ./bin/targets/mediatek/filogic/yourfile.txt
         mkdir -p ./bin/targets/mediatek/filogic/packages/ && echo "测试" > ./bin/targets/mediatek/filogic/packages/yourfile.txt
+        echo "======================="
         ls -R ./bin/targets/mediatek/filogic
+        echo "======================="
         ls -R ./bin/targets/mediatek
+        echo "======================="
+        tree ./bin/targets/mediatek/
         
 
 
