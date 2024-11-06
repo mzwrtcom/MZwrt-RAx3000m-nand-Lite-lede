@@ -147,6 +147,15 @@ jobs:
         echo "======================="
         tree ./artifact/${{ env.RELEASE_NAME }}
         echo "======================="
+        echo "======================="
+        tree ./artifact/
+        echo "======================="
+        echo "======================="
+        pwd
+        echo "======================="
+        echo "======================="
+        ls
+        echo "======================="
 
 
     - name: Upload Firmware and Packages to GitHub Release
