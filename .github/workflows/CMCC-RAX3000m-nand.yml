@@ -87,7 +87,7 @@ jobs:
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
         du -h --max-depth=1 ./bin
-        
+
     - name: Compress and clean up packages
       working-directory: ./openwrt
       run: |
@@ -97,17 +97,34 @@ jobs:
         rm -rf ./bin/targets/mediatek/filogic/packages
         # 输出空间使用情况
         du -h --max-depth=1 ./bin/targets/mediatek/filogic/
-
+        
     - name: Create versioned release directory
       working-directory: ./openwrt
       run: |
         # 创建版本目录（包括编译日期）
         RELEASE_NAME="MzWrt-CMCC-RAX3000M-$(date +'%Y%m%d')"
         mkdir -p ./artifact/$RELEASE_NAME
+        # 将整个目录下的文件复制到版本目录中
         cp -r ./bin/targets/mediatek/filogic/* ./artifact/$RELEASE_NAME/
 
-    - name: Upload firmware and packages
-      uses: actions/upload-artifact@v3
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
       with:
-        name: MzWrt-CMCC-RAX3000M
-        path: ./artifact
+        tag_name: "MzWrt-CMCC-RAX3000M-nand-$(date +'%Y%m%d')"
+        release_name: "Release $(date +'%Y%m%d')"
+        body: "This is the release of OpenWrt firmware for RAX3000M"
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload Firmware and Packages to GitHub Release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        # 上传版本目录下的所有文件
+        asset_path: ./artifact/$RELEASE_NAME/
+        asset_name: $RELEASE_NAME
+        asset_content_type: application/octet-stream
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
