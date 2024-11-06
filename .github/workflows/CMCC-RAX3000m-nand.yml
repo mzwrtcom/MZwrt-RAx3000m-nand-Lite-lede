@@ -64,7 +64,7 @@ jobs:
         
     - name: Configuration Customization - Build_mt7981_rax3000m
       env:
-        CONFIG_FILE: './config/rax3000m.config'
+        CONFIG_FILE: '.config/rax3000m.config'
       run: |
         echo "======================="
         pwd
@@ -73,8 +73,8 @@ jobs:
         echo "======================="
         ls config
         echo "======================="
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE ./openwrt/.config
-        cd openwrt && make oldconfig
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+        cd openwrt && cat .config && make oldconfig
         
     - name: Download package
       working-directory: ./openwrt
