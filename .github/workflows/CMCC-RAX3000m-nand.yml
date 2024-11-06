@@ -64,7 +64,7 @@ jobs:
         
     - name: Configuration Customization - Build_mt7981_rax3000m
       env:
-        CONFIG_FILE: '../config/rax3000m.config'
+        CONFIG_FILE: '.config/rax3000m.config'
       run: |
         echo "======================="
         pwd
@@ -146,8 +146,8 @@ jobs:
     - name: Debug created directory contents
       run: |
         echo "Directory structure:"
-        ls -R ./artifact/${{ env.RELEASE_NAME }}
-        tree ./artifact/${{ env.RELEASE_NAME }}
+        ls -R .openwrt/artifact/${{ env.RELEASE_NAME }}
+        tree ./openwrt/artifact/${{ env.RELEASE_NAME }}
         echo "Contents of ./artifact/:"
         ls -R ./artifact/
 
@@ -155,7 +155,7 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifact/${{ env.RELEASE_NAME }}/
+        asset_path: ./openwrt/artifact/${{ env.RELEASE_NAME }}/
         asset_name: ${{ env.RELEASE_NAME }}
         asset_content_type: application/octet-stream
       env:
