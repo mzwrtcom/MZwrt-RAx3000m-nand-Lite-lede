@@ -129,10 +129,10 @@ jobs:
         echo "======================="
         pwd
         echo "======================="
-        tree ./bin/targets/mediatek/filogic
+        tree .
         echo "======================="
         # 打包 packages 文件夹
-        tar -czf ./artifact/$RELEASE_NAME/packages.tar.gz -C bin/targets/mediatek/filogic/ packages
+        tar -czf ./artifact/$RELEASE_NAME/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
         # 删除 packages 文件夹
         rm -rf ./bin/targets/mediatek/filogic/packages
         # 将整个目录下的文件复制到版本目录中
