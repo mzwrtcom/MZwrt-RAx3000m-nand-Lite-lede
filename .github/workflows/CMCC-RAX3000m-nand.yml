@@ -66,7 +66,7 @@ jobs:
         CONFIG_FILE: './config/rax3000m.config'
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        cd openwrt && make oldconfig -n
+        cd openwrt && make oldconfig
         
     - name: Download package
       working-directory: ./openwrt
