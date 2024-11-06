@@ -110,11 +110,15 @@ jobs:
         # 将整个目录下的文件复制到版本目录中
         cp -r ./bin/targets/mediatek/filogic/* ./artifact/$RELEASE_NAME/
 
+    - name: Set release date
+      id: release_date
+      run: echo "RELEASE_DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
     - name: Create GitHub Release
       uses: actions/create-release@v1
       with:
-        tag_name: "MzWrt-CMCC-RAX3000M-nand-$(date +'%Y%m%d')"
-        release_name: "MzWrt-CMCC-RAX3000M-nand-$(date +'%Y%m%d')"
+        tag_name: "MzWrt-CMCC-RAX3000M-nand-${{ env.RELEASE_DATE }}"
+        release_name: "MzWrt-CMCC-RAX3000M-nand-${{ env.RELEASE_DATE }}"
         body: "This is the release of OpenWrt firmware for RAX3000M"
         draft: false
         prerelease: false
