@@ -11,7 +11,16 @@ sed -i "s/hostname='.*'/hostname='MzWrt'/g" package/base-files/files/bin/config_
 
 ##加入作者信息
 sed -i "s/DISTRIB_DESCRIPTION='*.*'/DISTRIB_DESCRIPTION='MzWrt'/g"  package/lean/default-settings/files/zzz-default-settings
-cp -af feeds/extraipk/patch/diy/banner-MZwrt  package/base-files/files/etc/banner
+echo -e "[35m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[35m\    ____                 _       __     __  /[0m
+[34m\   / __ \____  ___  ____| |     / /____/ /_ /[0m
+[36m\  / / / / __ \/ _ \/ __ \ | /| / / ___/ __/ /[0m
+[32m\ / /_/ / /_/ /  __/ / / / |/ |/ / /  / /_   /[0m
+[32m\ \____/ .___/\___/_/ /_/|__/|__/_/   \__/   /[0m
+[33m\     /_/                                    /[0m
+[33m\  M Z W r t  By  https://github.com/mzwrt   /[0m
+[31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m" >> package/base-files/files/etc/banner
+
 
 ##WiFi
 sed -i "s/OpenWrt/MzWrt-2.4G/g" package/lean/mt/drivers/mt_wifi/files/mt7915.1.2G.dat
