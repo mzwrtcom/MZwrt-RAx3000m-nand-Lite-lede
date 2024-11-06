@@ -110,6 +110,7 @@ jobs:
       run: |
         # 创建版本目录（包括编译日期）
         RELEASE_NAME="MzWrt-CMCC-RAX3000M-$(date +'%Y%m%d')"
+        echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
         mkdir -p ./artifact/$RELEASE_NAME
         # 打包 packages 文件夹
         tar -czf ./artifact/$RELEASE_NAME/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
@@ -129,7 +130,7 @@ jobs:
         echo "======================="
         pwd
         echo "======================="
-        tree .
+        tree ./artifact
         echo "======================="
         # 打包 packages 文件夹
         tar -czf ./artifact/$RELEASE_NAME/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
