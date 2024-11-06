@@ -119,7 +119,7 @@ jobs:
     - name: Create versioned release directory
       working-directory: ./openwrt
       run: |
-        mkdir -p ./artifact/${{ env.RELEASE_NAME }}
+        mkdir -p ./artifact/${{ env.RELEASE_NAME }}/
         ls ./artifact
         tar -czf ./artifact/${{ env.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
         cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ env.RELEASE_NAME }}/
@@ -140,6 +140,14 @@ jobs:
         prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 列出文件
+      working-directory: ./openwrt
+      run: |
+        echo "======================="
+        tree ./artifact/${{ env.RELEASE_NAME }}
+        echo "======================="
+
 
     - name: Upload Firmware and Packages to GitHub Release
       uses: actions/upload-release-asset@v1
