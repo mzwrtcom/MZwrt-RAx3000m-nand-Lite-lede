@@ -114,11 +114,16 @@ jobs:
       id: release_date
       run: echo "RELEASE_DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
 
+    - name: Set release name
+      id: set_release_name
+      run: echo "RELEASE_NAME=MzWrt-CMCC-RAX3000M-nand-${{ env.RELEASE_DATE }}" >> $GITHUB_ENV
+
     - name: Create GitHub Release
+      id: create_release
       uses: actions/create-release@v1
       with:
         tag_name: "MzWrt-CMCC-RAX3000M-nand-${{ env.RELEASE_DATE }}"
-        release_name: "MzWrt-CMCC-RAX3000M-nand-${{ env.RELEASE_DATE }}"
+        release_name: "${{ env.RELEASE_NAME }}"
         body: "This is the release of OpenWrt firmware for RAX3000M"
         draft: false
         prerelease: false
@@ -128,10 +133,9 @@ jobs:
     - name: Upload Firmware and Packages to GitHub Release
       uses: actions/upload-release-asset@v1
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        # 上传版本目录下的所有文件
-        asset_path: ./artifact/$RELEASE_NAME/
-        asset_name: $RELEASE_NAME
+        upload_url: ${{ steps.create_release.outputs.upload_url }}  # 从 create-release 步骤获取 upload_url
+        asset_path: ./artifact/${{ env.RELEASE_NAME }}/  # 使用定义的 RELEASE_NAME 变量
+        asset_name: ${{ env.RELEASE_NAME }}  # 使用定义的 RELEASE_NAME 变量
         asset_content_type: application/octet-stream
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
