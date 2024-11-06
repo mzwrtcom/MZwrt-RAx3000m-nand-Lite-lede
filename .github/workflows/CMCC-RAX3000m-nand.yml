@@ -110,6 +110,22 @@ jobs:
         # 将整个目录下的文件复制到版本目录中
         cp -r ./bin/targets/mediatek/filogic/* ./artifact/$RELEASE_NAME/
 
+    - name: Create versioned release directory
+      working-directory: ./openwrt
+      run: |
+        # 创建版本目录（包括编译日期）
+        RELEASE_NAME="MzWrt-CMCC-RAX3000M-$(date +'%Y%m%d')"
+        mkdir -p ./openwrt/artifact/$RELEASE_NAME
+        ls -l ./openwrt/artifact
+        # 打包 packages 文件夹
+        tar -czf ./openwrt/artifact/$RELEASE_NAME/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
+        # 删除 packages 文件夹
+        rm -rf ./bin/targets/mediatek/filogic/packages
+        # 将整个目录下的文件复制到版本目录中
+        cp -r ./bin/targets/mediatek/filogic/* ./openwrt/artifact/$RELEASE_NAME/
+        echo "Created directory and files in ./openwrt/artifact/$RELEASE_NAME"
+        ls -R ./openwrt/artifact/$RELEASE_NAME
+
     - name: Generate Tag & Release Name
       id: generate_name
       run: |
@@ -133,16 +149,15 @@ jobs:
 
     - name: Check generated files
       run: |
-        echo "Listing files in ./artifact:"
-        ls -R ./artifact/
+        echo "Listing files in ./openwrt/artifact:"
+        ls -R ./openwrt/artifact/
 
     - name: Upload Firmware and Packages to GitHub Release
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}  # 从 create-release 步骤获取 upload_url
-        asset_path: ./artifact/${{ env.RELEASE_NAME }}/  # 使用生成的 RELEASE_NAME 变量
+        asset_path: ./openwrt/artifact/${{ env.RELEASE_NAME }}/  # 使用生成的 RELEASE_NAME 变量
         asset_name: ${{ env.RELEASE_NAME }}  # 使用生成的 RELEASE_NAME 变量
         asset_content_type: application/octet-stream
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
