@@ -131,6 +131,11 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Check generated files
+      run: |
+        echo "Listing files in ./artifact:"
+        ls -R ./artifact/
+
     - name: Upload Firmware and Packages to GitHub Release
       uses: actions/upload-release-asset@v1
       with:
