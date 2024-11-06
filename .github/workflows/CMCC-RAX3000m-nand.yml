@@ -124,11 +124,11 @@ jobs:
         mkdir -p ./openwrt/artifact/$RELEASE_NAME
         ls ./openwrt/artifact
         # 打包 packages 文件夹
-        tar -czf ./openwrt/artifact/$RELEASE_NAME/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
+        tar -czf ./openwrt/artifact/$RELEASE_NAME/packages.tar.gz -C ./openwrt/bin/targets/mediatek/filogic/ packages
         # 删除 packages 文件夹
-        rm -rf ./bin/targets/mediatek/filogic/packages
+        rm -rf ./openwrt/bin/targets/mediatek/filogic/packages
         # 将整个目录下的文件复制到版本目录中
-        cp -r ./bin/targets/mediatek/filogic/* ./openwrt/artifact/$RELEASE_NAME/
+        cp -r ./openwrt/bin/targets/mediatek/filogic/* ./openwrt/artifact/$RELEASE_NAME/
         echo "Created directory and files in ./openwrt/artifact/$RELEASE_NAME"
         ls -R ./openwrt/artifact/$RELEASE_NAME
 
