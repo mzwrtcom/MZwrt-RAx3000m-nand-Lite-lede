@@ -104,30 +104,30 @@ jobs:
         du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
         du -h --max-depth=1 ./build_dir
         du -h --max-depth=1 ./bin
-        
-    - name: Create versioned release directory
-      working-directory: ./openwrt
-      run: |
-        RELEASE_NAME="MzWrt-CMCC-RAX3000M-$(date +'%Y%m%d')"
-        echo "RELEASE_NAME=$RELEASE_NAME" >> $GITHUB_ENV
-        mkdir -p ./artifact/$RELEASE_NAME
-        ls ./artifact
-        tar -czf ./artifact/$RELEASE_NAME/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
-        cp -r ./bin/targets/mediatek/filogic/* ./artifact/$RELEASE_NAME/
-        echo "Created directory and files in ./artifact/$RELEASE_NAME"
-        echo "======================="
-        tree ./artifact/$RELEASE_NAME
-        echo "======================="
-        rm -rf ./artifact/$RELEASE_NAME/packages
+
 
     - name: Generate Tag & Release Name
       id: generate_name
       run: |
         time=$(date +%Y%m%d%H%M%S)
         release_tag="$time"
-        release_name="MzWrt-CMCC-RAX300M-$(date +%Y%m%d)"
+        release_name="MzWrt-CMCC-RAX3000M-$(date +%Y%m%d)"
         echo "RELEASE_TAG=$release_tag" >> $GITHUB_ENV
         echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
+
+      
+    - name: Create versioned release directory
+      working-directory: ./openwrt
+      run: |
+        mkdir -p ./artifact/${{ env.RELEASE_NAME }}
+        ls ./artifact
+        tar -czf ./artifact/${{ env.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
+        cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ env.RELEASE_NAME }}/
+        echo "Created directory and files in ./artifact/${{ env.RELEASE_NAME }}"
+        echo "======================="
+        tree ./artifact/${{ env.RELEASE_NAME }}
+        echo "======================="
+        rm -rf ./artifact/${{ env.RELEASE_NAME }}/packages
 
     - name: Create GitHub Release
       id: create_release
