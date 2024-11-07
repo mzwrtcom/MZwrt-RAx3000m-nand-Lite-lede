@@ -66,6 +66,7 @@ jobs:
       env:
         CONFIG_FILE: '.config/rax3000m.config'
       run: |
+        mv ./config/rax3000m.config ./openwrt/.config
         echo "======================="
         pwd
         echo "======================="
