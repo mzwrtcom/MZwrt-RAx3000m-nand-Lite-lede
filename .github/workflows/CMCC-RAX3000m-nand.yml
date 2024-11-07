@@ -157,16 +157,16 @@ jobs:
 
     - name: Upload Firmware and Packages to GitHub Release
       run: |
-         # List all files in the release directory
+        # List all files in the release directory
          for file in "openwrt/artifact/${{ env.RELEASE_NAME }}"/*; do
-         # Check if it's a file (skip directories)
-         if [ -f "$file" ]; then
-         # Upload each file individually
-         curl -XPOST -H "Authorization: token $GITHUB_TOKEN" \
-             -H "Content-Type: application/octet-stream" \
-             --data-binary @"$file" \
-             "${{ steps.create_release.outputs.upload_url }}?name=$(basename "$file")"
-         fi
-         done
+          # Check if it's a file (skip directories)
+           if [ -f "$file" ]; then
+            # Upload each file individually using curl
+             curl -XPOST -H "Authorization: token $GITHUB_TOKEN" \
+               -F "file=@$file" \
+               "${{ steps.create_release.outputs.upload_url }}?name=$(basename "$file")"
+           fi
+        done
       env:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
