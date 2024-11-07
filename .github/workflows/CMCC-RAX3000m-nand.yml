@@ -164,7 +164,7 @@ jobs:
             # Upload each file individually using curl
              curl -XPOST -H "Authorization: token $GITHUB_TOKEN" \
                -F "file=@$file" \
-               "${{ steps.create_release.outputs.upload_url }}?name=$(basename "$file")"
+               "${{ steps.create_release.outputs.upload_url }}=$(basename "$file")"
            fi
         done
       env:
