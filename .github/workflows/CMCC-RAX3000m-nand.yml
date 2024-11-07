@@ -23,19 +23,19 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        #sudo -E swapoff -a
-        #sudo -E rm -f /swapfile
-        #docker rmi `docker images -q`
-        #sudo -E apt-mark hold grub-efi-amd64-signed
-        #sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
-        #sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-        #sudo -E apt update
-        #sudo -E apt -y upgrade
-        #sudo -E apt -y full-upgrade
-        #sudo -E apt -y install re2c indent libattr1-dev libdebuginfod-dev libiptc-dev rpm gfortran diffstat ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev build-essential git wget curl unzip bzip2 xz-utils flex bison gawk libc6-dev libncurses5-dev libncursesw5-dev libssl-dev zlib1g-dev libtool python3 python3-pip python3-setuptools
-        #sudo -E apt -y autoremove --purge
-        #sudo -E systemctl daemon-reload
-        #sudo -E apt clean
+        sudo -E swapoff -a
+        sudo -E rm -f /swapfile
+        docker rmi `docker images -q`
+        sudo -E apt-mark hold grub-efi-amd64-signed
+        sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
+        sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+        sudo -E apt update
+        sudo -E apt -y upgrade
+        sudo -E apt -y full-upgrade
+        sudo -E apt -y install re2c indent libattr1-dev libdebuginfod-dev libiptc-dev rpm gfortran diffstat ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev build-essential git wget curl unzip bzip2 xz-utils flex bison gawk libc6-dev libncurses5-dev libncursesw5-dev libssl-dev zlib1g-dev libtool python3 python3-pip python3-setuptools
+        sudo -E apt -y autoremove --purge
+        sudo -E systemctl daemon-reload
+        sudo -E apt clean
         sudo -E timedatectl set-timezone "Asia/Shanghai"
         git config --global user.name 'GitHub Actions' && git config --global user.email 'waiquwang@gmail.com'
         df -h
@@ -66,15 +66,8 @@ jobs:
       env:
         CONFIG_FILE: './config/rax3000m.config'
       run: |
-        echo "======================="
-        pwd
-        echo "======================="
-        ls
-        echo "======================="
-        ls config
-        echo "======================="
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE ./openwrt/.config
-        cd openwrt && cat .config && make oldconfig
+        cd openwrt && cat .config && make defconfig && cat .config
         
     - name: Download package
       working-directory: ./openwrt
@@ -86,22 +79,7 @@ jobs:
     - name: Build firmware
       working-directory: ./openwrt
       run: |
-        # make -j$(nproc) || make -j1 V=s
-
-        mkdir -p ./bin/targets/mediatek/filogic/ && echo "测试" > ./bin/targets/mediatek/filogic/yourfile.txt
-        mkdir -p ./bin/targets/mediatek/filogic/packages/ && echo "测试" > ./bin/targets/mediatek/filogic/packages/yourfile.txt
-        echo "======================="
-        pwd
-        echo "======================="
-        ls -R ./bin/targets/mediatek/filogic
-        echo "======================="
-        ls -R ./bin/targets/mediatek
-        echo "======================="
-        tree ./bin/targets/mediatek/
-        
-
-
-        
+        make -j$(nproc) || make -j1 V=s
         echo "======================="
         echo "Space usage:"
         echo "======================="
@@ -129,10 +107,13 @@ jobs:
         ls ./artifact
         tar -czf ./artifact/${{ env.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
         cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ env.RELEASE_NAME }}/
-        echo "Created directory and files in ./artifact/${{ env.RELEASE_NAME }}"
-        echo "======================="
-        tree ./artifact/${{ env.RELEASE_NAME }}
-        echo "======================="
+        # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
+        find ./artifact/${{ env.RELEASE_NAME }}/ -type f -name "openwrt*" -exec bash -c '
+          for file; do
+            new_name="${file//openwrt/MzWrt}"
+            mv "$file" "$new_name"
+        done
+        ' bash {} +
         rm -rf ./artifact/${{ env.RELEASE_NAME }}/packages
 
     - name: Create GitHub Release
