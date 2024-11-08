@@ -122,10 +122,16 @@ jobs:
         ' bash {} +
         rm -rf ./artifact/${{ env.RELEASE_NAME }}/packages
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: softprops/action-gh-release@v1
+    - name: Upload Firmwares
+      uses: actions/upload-artifact@main
       with:
-       files: ./openwrt/artifact/${{ env.RELEASE_NAME }}/*  # 指定上传的文件路径
-      env:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: CMCC-RAX3000M-OpenWrt
+        path: openwrt/artifact/${{ env.RELEASE_NAME }}/*.bin
+
+    - name: Create Release & Upload
+      uses: ncipollo/release-action@v1.14.0
+      with:
+        artifacts: openwrt/artifact/${{ env.RELEASE_NAME }}/*
+        name: ${{ steps.generate_name.outputs.RELEASE_NAME }}
+        tag: ${{ steps.generate_name.outputs.RELEASE_TAG }}
+        token: ${{ secrets.GITHUB_TOKEN }}
