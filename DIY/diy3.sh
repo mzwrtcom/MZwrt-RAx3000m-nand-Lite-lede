@@ -27,11 +27,11 @@ uci set wireless.radio0.country='CN'
 uci set wireless.radio1.country='CN'
 
 # 信道设置
-uci set wireless.radio0.channel='13'  # 设置 2.4GHz 信道为 13
-uci set wireless.radio1.channel='36'  # 设置 5GHz 信道为 36
+uci set wireless.radio0.channel='auto'  # 设置 2.4GHz 信道为 13
+uci set wireless.radio1.channel='auto'  # 设置 5GHz 信道为 36
 
 # 设置 2.4GHz 频段的无线模式（支持 802.11n，20MHz 或 40MHz，最大带宽 40MHz）
-uci set wireless.radio0.htmode='HT40'  # 设置 2.4GHz 频段为 40MHz 带宽
+uci set wireless.radio0.htmode='HE40'  # 设置 2.4GHz 频段为 40MHz 带宽
 
 # 设置 5GHz 频段的无线模式为 HE160（最大带宽 160MHz）
 uci set wireless.radio1.htmode='HE160'  # 设置 5GHz 带宽为 160MHz
@@ -41,9 +41,11 @@ uci set wireless.radio0.beamforming='1'  # 开启 2.4GHz 的 Beamforming
 uci set wireless.radio1.beamforming='1'  # 开启 5GHz 的 Beamforming
 
 # 开启 MU-MIMO 支持
+uci set wireless.radio0.mu_mimo='1'  # 开启 2.4GHz 的 MU-MIMO
 uci set wireless.radio1.mu_mimo='1'  # 开启 5GHz 的 MU-MIMO
 
 # 开启 OFDMA 支持
+uci set wireless.radio0.ofdma='1'    # 开启 2.4GHz 的 OFDMA
 uci set wireless.radio1.ofdma='1'    # 开启 5GHz 的 OFDMA
 
 # 设置 2.4GHz SSID 名称为 MzWrt-2.4G
@@ -66,5 +68,47 @@ uci commit network
 uci commit system
 # 重启系统
 # /etc/init.d/system restart
+
+EOL
+
+cat <<EOL >> package/base-files/files/etc/sysctl.conf
+vm.swappiness=10
+vm.vfs_cache_pressure=50
+
+fs.nr_open=1200000
+fs.file-max=200000
+
+# Enable TCP SYN cookies
+net.ipv4.tcp_syncookies=1
+
+# Increase the maximum number of connections in the backlog
+net.core.somaxconn=65535
+
+# Increase the maximum number of queued packets
+net.core.netdev_max_backlog=1000
+
+# Increase buffer sizes for TCP
+net.core.rmem_default=65536
+net.core.wmem_default=65536
+net.core.rmem_max=16777216
+net.core.wmem_max=16777216
+
+# TCP settings
+net.ipv4.tcp_max_syn_backlog=4096
+net.ipv4.tcp_synack_retries=1
+net.ipv4.tcp_keepalive_time=1800
+net.ipv4.tcp_keepalive_intvl=15
+net.ipv4.tcp_keepalive_probes=5
+net.ipv4.tcp_fin_timeout=10
+net.ipv4.tcp_max_orphans=65536
+net.ipv4.tcp_mem=50576 64768 98152
+net.ipv4.tcp_rmem=4096 87380 16777216
+net.ipv4.tcp_wmem=4096 65536 16777216
+net.ipv4.tcp_orphan_retries=0
+net.ipv4.tcp_no_metrics_save=1
+net.ipv4.tcp_window_scaling=1
+net.ipv4.tcp_timestamps=1
+net.ipv4.tcp_sack=1
+net.ipv4.tcp_rfc1337=1
 
 EOL
