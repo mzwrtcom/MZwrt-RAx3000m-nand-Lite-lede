@@ -107,53 +107,6 @@ jobs:
         echo "RELEASE_NAME=$release_name" >> $GITHUB_OUTPUT
 
 
-    - name: Create versioned release directory
-      working-directory: ./openwrt
-      run: |
-        mkdir -p ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
-        #tar -czf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
-        cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
-        # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
-        find ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/ -type f -name "openwrt*" -exec bash -c '
-          for file; do
-            new_name="${file//openwrt/MzWrt}"
-            mv "$file" "$new_name"
-        done
-        ' bash {} +
-        rm -rf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages
-
-    - name: Release body
-      working-directory: ./openwrt
-      run: |
-        # 读取 profiles.json 文件内容
-        json_content=$(cat ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/profiles.json)
-
-        # 解析需要的字段
-        version_number=$(echo "$json_content" | jq -r '.version_number')
-        arch_packages=$(echo "$json_content" | jq -r '.arch_packages')
-
-        # 获取 Titles 信息，显示在最前面
-        titles=$(echo "$json_content" | jq -r '.profiles.cmcc_rax300m-nand.titles[] | "\(.model) by \(.vendor)"')
-
-        # 获取 image_prefix
-        image_prefix=$(echo "$json_content" | jq -r '.profiles.cmcc_rax300m-nand.image_prefix')
-
-        # 解析 images 信息，简化输出格式
-        images=$(echo "$json_content" | jq -r '.profiles.cmcc_rax300m-nand.images[] | 
-            "* \(.name | gsub("openwrt"; "mzwrt")) (\(.type))\n  sha256: \(.sha256)\n  sha256 (unsigned): \(.sha256_unsigned)\n"')
-
-
-        # 拼接最终的 body 内容
-        body_content="**Title:** $titles\n\n
-        **Release Version:** $version_number\n\n
-        **Architectural Packages:** $arch_packages\n\n
-        **Image Prefix:** $image_prefix\n\n
-        **Firmware Images:**\n$images"
-
-        # 输出到 GitHub Release 的 body
-        echo "body=$body_content" >> $GITHUB_OUTPUT
-
-
     - name: Upload Firmwares
       uses: actions/upload-artifact@main
       with:
@@ -166,5 +119,5 @@ jobs:
         artifacts: openwrt/artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/*
         name: ${{ steps.generate_name.outputs.RELEASE_NAME }}
         tag: ${{ steps.generate_name.outputs.RELEASE_TAG }}
-        body: ${{ steps.release_body.outputs.body }}  # Release的描述
+        body: "This is the release of OpenWrt firmware for RAX3000M"  # Release的描述
         token: ${{ secrets.GITHUB_TOKEN }}
