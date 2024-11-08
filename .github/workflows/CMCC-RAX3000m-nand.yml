@@ -106,6 +106,20 @@ jobs:
         echo "RELEASE_TAG=$release_tag" >> $GITHUB_OUTPUT
         echo "RELEASE_NAME=$release_name" >> $GITHUB_OUTPUT
 
+    - name: Create versioned release directory
+      working-directory: ./openwrt
+      run: |
+        mkdir -p ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
+        #tar -czf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
+        cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
+        # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
+        find ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/ -type f -name "openwrt*" -exec bash -c '
+          for file; do
+            new_name="${file//openwrt/MzWrt}"
+            mv "$file" "$new_name"
+        done
+        ' bash {} +
+        rm -rf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages
 
     - name: Upload Firmwares
       uses: actions/upload-artifact@main
