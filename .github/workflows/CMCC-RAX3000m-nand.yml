@@ -80,6 +80,9 @@ jobs:
     - name: Build firmware
       working-directory: ./openwrt
       run: |
+        # 修复libtool安装警告
+        libtool --finish /home/runner/work/MZwrt-RAx3000m-nand-Lite-lede/MZwrt-RAx3000m-nand-Lite-lede/openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-11.3.0_musl/libexec/gcc/aarch64-openwrt-linux-musl/11.3.0
+
         make -j$(nproc) V=s
         echo "======================="
         echo "Space usage:"
