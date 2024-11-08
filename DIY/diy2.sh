@@ -13,7 +13,7 @@ sed -i "s/hostname='.*'/hostname='MzWrt'/g" package/base-files/files/bin/config_
 sed -i '/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF/d' package/lean/default-settings/files/zzz-default-settings
 
 ##加入作者信息
-sed -i "s/DISTRIB_DESCRIPTION='*.*'/DISTRIB_DESCRIPTION='MzWrt'/g"  package/lean/default-settings/files/zzz-default-settings
+sed -i "s/DISTRIB_DESCRIPTION='*.*'/DISTRIB_DESCRIPTION='MzWrt-'/g"  package/lean/default-settings/files/zzz-default-settings
 echo -e "[35m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
 [35m\    ____                 _       __     __  /[0m
 [34m\   / __ \____  ___  ____| |     / /____/ /_ /[0m
