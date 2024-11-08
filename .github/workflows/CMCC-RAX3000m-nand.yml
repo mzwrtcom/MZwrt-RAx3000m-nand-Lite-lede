@@ -83,8 +83,8 @@ jobs:
         #make -j$(nproc) || make -j1 V=s
 
 
-        mkdir -p ./bin/targets/mediatek/filogic/ && echo "测试" > ./bin/targets/mediatek/filogic/yourfile.txt
-        mkdir -p ./bin/targets/mediatek/filogic/packages/ && echo "测试" > ./bin/targets/mediatek/filogic/packages/yourfile.txt
+        mkdir -p ./bin/targets/mediatek/filogic/ && echo "测试" > ./bin/targets/mediatek/filogic/yourfile.bin
+        mkdir -p ./bin/targets/mediatek/filogic/packages/ && echo "测试" > ./bin/targets/mediatek/filogic/packages/wwwwww.txt
         
         echo "======================="
         echo "Space usage:"
@@ -124,36 +124,8 @@ jobs:
 
     - name: Create GitHub Release
       id: create_release
-      uses: actions/create-release@v1.1.4
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: "${{ env.RELEASE_TAG }}"
-        release_name: "${{ env.RELEASE_NAME }}"
-        body: "This is the release of OpenWrt firmware for RAX3000M"
-        draft: false
-        prerelease: false
+       files: ./openwrt/artifact/${{ env.RELEASE_NAME }}/*  # 指定上传的文件路径
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Debug created directory contents
-      run: |
-        echo "Directory structure:"
-        ls -R ./openwrt/artifact/${{ env.RELEASE_NAME }}
-        tree openwrt/artifact/${{ env.RELEASE_NAME }}
-        echo "Contents of ./artifact/:"
-        ls -R openwrt/artifact
-
-    - name: Upload Firmware and Packages to GitHub Release
-      run: |
-        # List all files in the release directory
-         for file in "openwrt/artifact/${{ env.RELEASE_NAME }}"/*; do
-          # Check if it's a file (skip directories)
-           if [ -f "$file" ]; then
-            # Upload each file individually using curl
-             curl -XPOST -H "Authorization: token $GITHUB_TOKEN" \
-               -F "file=@$file" \
-               "${{ steps.create_release.outputs.upload_url }}=$(basename "$file")"
-           fi
-        done
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
