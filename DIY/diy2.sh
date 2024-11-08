@@ -100,13 +100,13 @@ EOL
 # 从 /etc/sysctl.d/ 目录中删除net.ipv4.tcp_fin_timeout=和net.ipv4.tcp_keepalive_time=因为下面已经定义了这两个的值防止被覆盖
 for conf_file in package/base-files/files/etc/sysctl.d/*.conf; do
     if grep -q "net.ipv4.tcp_fin_timeout=" "$conf_file"; then
-        sed -i '/net.ipv4.tcp_fin_timeout=/d' "$conf_file"
-        echo "Deleted net.ipv4.tcp_fin_timeout=30 from $conf_file"
+        sed -i '/net.ipv4.tcp_fin_timeout=/s/^/#/' "$conf_file"
+        echo "Commented out net.ipv4.tcp_fin_timeout=30 in $conf_file"
     fi
 
     if grep -q "net.ipv4.tcp_keepalive_time=" "$conf_file"; then
-        sed -i '/net.ipv4.tcp_keepalive_time=/d' "$conf_file"
-        echo "Deleted net.ipv4.tcp_keepalive_time= from $conf_file"
+        sed -i '/net.ipv4.tcp_keepalive_time=/s/^/#/' "$conf_file"
+        echo "Commented out net.ipv4.tcp_keepalive_time=120 in $conf_file"
     fi
 done
 
