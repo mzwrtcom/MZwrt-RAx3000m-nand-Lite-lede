@@ -23,23 +23,22 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        #sudo -E swapoff -a
-        #sudo -E rm -f /swapfile
-        #docker rmi `docker images -q`
-        #sudo -E apt-mark hold grub-efi-amd64-signed
-        #sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
-        #sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-        #sudo -E apt update
-        #sudo -E apt -y upgrade
-        #sudo -E apt -y full-upgrade
-        #sudo -E apt install -y m4 babeltrace libunwind-dev texinfo binutils binutils-gold liblzma-dev libzstd-dev autoconf automake ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-        #sudo -E apt -y install re2c indent libattr1-dev libdebuginfod-dev libiptc-dev rpm gfortran diffstat ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev build-essential git wget curl unzip bzip2 xz-utils flex bison gawk libc6-dev libncurses5-dev libncursesw5-dev libssl-dev zlib1g-dev libtool python3 python3-pip python3-setuptools
-        #sudo -E apt -y autoremove --purge
-        #sudo -E systemctl daemon-reload
-        #sudo -E apt clean
+        sudo -E swapoff -a
+        sudo -E rm -f /swapfile
+        docker rmi `docker images -q`
+        sudo -E apt-mark hold grub-efi-amd64-signed
+        sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
+        sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+        sudo -E apt update
+        sudo -E apt -y upgrade
+        sudo -E apt -y full-upgrade
+        sudo -E apt install -y m4 babeltrace libunwind-dev texinfo binutils binutils-gold liblzma-dev libzstd-dev autoconf automake ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+        sudo -E apt -y install re2c indent libattr1-dev libdebuginfod-dev libiptc-dev rpm gfortran diffstat ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev build-essential git wget curl unzip bzip2 xz-utils flex bison gawk libc6-dev libncurses5-dev libncursesw5-dev libssl-dev zlib1g-dev libtool python3 python3-pip python3-setuptools
+        sudo -E apt -y autoremove --purge
+        sudo -E systemctl daemon-reload
+        sudo -E apt clean
         sudo -E timedatectl set-timezone "Asia/Shanghai"
         git config --global user.name 'GitHub Actions' && git config --global user.email 'waiquwang@gmail.com'
-        df -h
         
     - name: Clone source code
       env: 
@@ -53,9 +52,9 @@ jobs:
     - name: Update & Install feeds
       working-directory: ./openwrt
       run: |
-        #./scripts/feeds update -a
+        ./scripts/feeds update -a
 
-        #./scripts/feeds install -a
+        ./scripts/feeds install -a
 
         cp -f ../DIY/diy2.sh ./        
         chmod +x ./diy2.sh && ./diy2.sh
@@ -67,34 +66,29 @@ jobs:
       env:
         CONFIG_FILE: './config/rax3000m.config'
       run: |
-        #[ -e $CONFIG_FILE ] && mv $CONFIG_FILE ./openwrt/.config
-        #cd openwrt && cat .config && make defconfig && cat .config
+        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE ./openwrt/.config
+        cd openwrt && cat .config && make defconfig && cat .config
         
     - name: Download package
       working-directory: ./openwrt
       run: |
-        #make download -j16
-        #find dl -size -1024c -exec ls -l {} \;
-        #find dl -size -1024c -exec rm -f {} \;
+        make download -j16
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
 
     - name: Build firmware
       working-directory: ./openwrt
       run: |
-        #make -j$(nproc) || make -j1 V=s
+        make -j$(nproc) || make -j1 V=s
 
-
-        mkdir -p ./bin/targets/mediatek/filogic/ && echo "测试" > ./bin/targets/mediatek/filogic/yourfile.bin
-        mkdir -p ./bin/targets/mediatek/filogic/ && printf '{"arch_packages":"aarch64_cortex-a53","default_packages":["autocore-arm","base-files","block-mount","busybox","ca-bundle","ca-certificates","coremark","curl","ddns-scripts_aliyun","ddns-scripts_dnspod","default-settings","dnsmasq-full","dropbear","firewall","fstools","htop","ip-full","ipset","iptables","iptables-mod-extra","iptables-mod-tproxy","kmod-crypto-hw-safexcel","kmod-gpio-button-hotplug","kmod-ipt-raw","kmod-leds-gpio","kmod-mt7915e","kmod-nf-nathelper","kmod-nf-nathelper-extra","kmod-tun","libc","libgcc","libustream-openssl","logd","luci","luci-app-accesscontrol","luci-app-arpbind","luci-app-autoreboot","luci-app-ddns","luci-app-filetransfer","luci-app-nlbwmon","luci-app-ssr-plus","luci-app-turboacc","luci-app-upnp","luci-app-vlmcsd","luci-app-vsftpd","luci-app-wol","luci-proto-ipv6","mtd","netifd","odhcp6c","odhcpd-ipv6only","opkg","ppp","ppp-mod-pppoe","procd","procd-seccomp","procd-ujail","uboot-envtools","uboot-envtools","uci","uclient-fetch","urandom-seed","urngd","wpad-openssl","wpad-openssl"],"metadata_version":1,"profiles":{"cmcc_rax3000m-nand":{"device_packages":["kmod-mt7981-firmware","mt7981-wo-firmware","kmod-usb3"],"image_prefix":"openwrt-mediatek-filogic-cmcc_rax3000m-nand","images":[{"filesystem":"squashfs","name":"openwrt-mediatek-filogic-cmcc_rax3000m-nand-squashfs-sysupgrade.bin","sha256":"fc82febb9464c2b27dd258718f7b4ed71d0c8ba8e9d538828f196bf6252430cc","sha256_unsigned":"dd795aabdc1665a421f13b56954aec2814a2c0cecbb56ce0e0256f23cfc6d998","type":"sysupgrade"},{"filesystem":"squashfs","name":"openwrt-mediatek-filogic-cmcc_rax3000m-nand-squashfs-factory.bin","sha256":"f647425ef6f906861056a45cb2dca1a5156ee9bde46528cb4a92150e22f48c74","sha256_unsigned":"f647425ef6f906861056a45cb2dca1a5156ee9bde46528cb4a92150e22f48c74","type":"factory"},{"filesystem":"initramfs","name":"openwrt-mediatek-filogic-cmcc_rax3000m-nand-initramfs-kernel.bin","sha256":"1d5ef81376062e5074e1b6ad98a9b0f85285484cd657940d09370323c189f91d","sha256_unsigned":"1d5ef81376062e5074e1b6ad98a9b0f85285484cd657940d09370323c189f91d","type":"kernel"}],"supported_devices":["cmcc,rax3000m-nand"],"titles":[{"model":"RAX3000M (NAND version)","vendor":"CMCC"}]}},"source_date_epoch":1730810168,"target":"mediatek/filogic","version_code":"r6979-d83c55af8","version_number":"SNAPSHOT"}' > ./bin/targets/mediatek/filogic/profiles.json
-        mkdir -p ./bin/targets/mediatek/filogic/packages/ && echo "测试" > ./bin/targets/mediatek/filogic/packages/wwwwww.txt
-        
         echo "======================="
         echo "Space usage:"
         echo "======================="
         df -h
         echo "======================="
-        #du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
-        #du -h --max-depth=1 ./build_dir
-        #du -h --max-depth=1 ./bin
+        du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
+        du -h --max-depth=1 ./build_dir
+        du -h --max-depth=1 ./bin
 
 
     - name: Generate Tag & Release Name
