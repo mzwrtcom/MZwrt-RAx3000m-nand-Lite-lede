@@ -102,36 +102,37 @@ jobs:
         time=$(date +%Y%m%d%H%M%S)
         release_tag="$time"
         release_name="MzWrt-CMCC-RAX3000M-$(date +%Y%m%d)"
-        echo "RELEASE_TAG=$release_tag" >> $GITHUB_ENV
-        echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
+        echo "RELEASE_TAG=$release_tag" >> $GITHUB_OUTPUT
+        echo "RELEASE_NAME=$release_name" >> $GITHUB_OUTPUT
 
       
     - name: Create versioned release directory
       working-directory: ./openwrt
       run: |
-        mkdir -p ./artifact/${{ env.RELEASE_NAME }}/
+        mkdir -p ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
         ls ./artifact
-        #tar -czf ./artifact/${{ env.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
-        cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ env.RELEASE_NAME }}/
+        #tar -czf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
+        cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
         # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
-        find ./artifact/${{ env.RELEASE_NAME }}/ -type f -name "openwrt*" -exec bash -c '
+        find ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/ -type f -name "openwrt*" -exec bash -c '
           for file; do
             new_name="${file//openwrt/MzWrt}"
             mv "$file" "$new_name"
         done
         ' bash {} +
-        rm -rf ./artifact/${{ env.RELEASE_NAME }}/packages
+        rm -rf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages
 
     - name: Upload Firmwares
       uses: actions/upload-artifact@main
       with:
         name: CMCC-RAX3000M-OpenWrt
-        path: openwrt/artifact/${{ env.RELEASE_NAME }}/*.bin
+        path: openwrt/artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/*.bin
 
     - name: Create Release & Upload
       uses: ncipollo/release-action@v1.14.0
       with:
-        artifacts: openwrt/artifact/${{ env.RELEASE_NAME }}/*
+        artifacts: openwrt/artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/*
         name: ${{ steps.generate_name.outputs.RELEASE_NAME }}
         tag: ${{ steps.generate_name.outputs.RELEASE_TAG }}
+        body: "This is the release of OpenWrt firmware for RAX3000M"  # Release的描述
         token: ${{ secrets.GITHUB_TOKEN }}
