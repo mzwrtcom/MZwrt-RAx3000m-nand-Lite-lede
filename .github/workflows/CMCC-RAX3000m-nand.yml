@@ -106,11 +106,27 @@ jobs:
         echo "RELEASE_TAG=$release_tag" >> $GITHUB_OUTPUT
         echo "RELEASE_NAME=$release_name" >> $GITHUB_OUTPUT
 
+
+    - name: Create versioned release directory
+      working-directory: ./openwrt
+      run: |
+        mkdir -p ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
+        #tar -czf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
+        cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
+        # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
+        find ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/ -type f -name "openwrt*" -exec bash -c '
+          for file; do
+            new_name="${file//openwrt/MzWrt}"
+            mv "$file" "$new_name"
+        done
+        ' bash {} +
+        rm -rf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages
+
     - name: Release body
       working-directory: ./openwrt
       run: |
         # 读取 profiles.json 文件内容
-        json_content=$(cat openwrt/artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/profiles.json)
+        json_content=$(cat artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/profiles.json)
 
         # 解析需要的字段
         version_number=$(echo "$json_content" | jq -r '.version_number')
@@ -137,22 +153,6 @@ jobs:
         # 输出到 GitHub Release 的 body
         echo "body=$body_content" >> $GITHUB_OUTPUT
 
-
-      
-    - name: Create versioned release directory
-      working-directory: ./openwrt
-      run: |
-        mkdir -p ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
-        #tar -czf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
-        cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
-        # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
-        find ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/ -type f -name "openwrt*" -exec bash -c '
-          for file; do
-            new_name="${file//openwrt/MzWrt}"
-            mv "$file" "$new_name"
-        done
-        ' bash {} +
-        rm -rf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages
 
     - name: Upload Firmwares
       uses: actions/upload-artifact@main
