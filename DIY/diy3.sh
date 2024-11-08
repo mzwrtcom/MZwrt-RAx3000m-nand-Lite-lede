@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # 开启 irqbalance
 cat <<EOL >> package/base-files/files/etc/uci-defaults/99-irqbalance-settings
 #!/bin/sh
@@ -10,7 +12,6 @@ sed -i "s/#option interval '10'/option interval '10'/g" /etc/config/irqbalance
 
 exit 0
 EOL
-
 
 cat <<EOL >> package/base-files/files/etc/uci-defaults/99-MzWrt-settings
 #!/bin/sh
@@ -71,6 +72,21 @@ uci commit system
 
 EOL
 
+
+# 从 /etc/sysctl.d/ 目录中删除net.ipv4.tcp_fin_timeout=和net.ipv4.tcp_keepalive_time=因为下面已经定义了这两个的值防止被覆盖
+for conf_file in package/base-files/files/etc/sysctl.d/*.conf; do
+    if grep -q "net.ipv4.tcp_fin_timeout=" "$conf_file"; then
+        sed -i '/net.ipv4.tcp_fin_timeout=/d' "$conf_file"
+        echo "Deleted net.ipv4.tcp_fin_timeout=30 from $conf_file"
+    fi
+
+    if grep -q "net.ipv4.tcp_keepalive_time=" "$conf_file"; then
+        sed -i '/net.ipv4.tcp_keepalive_time=/d' "$conf_file"
+        echo "Deleted net.ipv4.tcp_keepalive_time= from $conf_file"
+    fi
+done
+
+# 设置sysctl.conf参数优化系统和网络
 cat <<EOL >> package/base-files/files/etc/sysctl.conf
 vm.swappiness=10
 vm.vfs_cache_pressure=50
@@ -96,7 +112,7 @@ net.core.wmem_max=16777216
 # TCP settings
 net.ipv4.tcp_max_syn_backlog=4096
 net.ipv4.tcp_synack_retries=1
-net.ipv4.tcp_keepalive_time=1800
+net.ipv4.tcp_keepalive_time=300
 net.ipv4.tcp_keepalive_intvl=15
 net.ipv4.tcp_keepalive_probes=5
 net.ipv4.tcp_fin_timeout=10
