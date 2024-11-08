@@ -126,7 +126,7 @@ jobs:
       working-directory: ./openwrt
       run: |
         # 读取 profiles.json 文件内容
-        json_content=$(cat artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/profiles.json)
+        json_content=$(cat ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/profiles.json)
 
         # 解析需要的字段
         version_number=$(echo "$json_content" | jq -r '.version_number')
