@@ -84,7 +84,7 @@ jobs:
 
 
         mkdir -p ./bin/targets/mediatek/filogic/ && echo "测试" > ./bin/targets/mediatek/filogic/yourfile.bin
-        mkdir -p ./bin/targets/mediatek/filogic/ && echo "测试" > ./bin/targets/mediatek/filogic/yourfile.txt
+        mkdir -p ./bin/targets/mediatek/filogic/ && echo "{"arch_packages":"aarch64_cortex-a53","default_packages":["autocore-arm","base-files","block-mount","busybox","ca-bundle","ca-certificates","coremark","curl","ddns-scripts_aliyun","ddns-scripts_dnspod","default-settings","dnsmasq-full","dropbear","firewall","fstools","htop","ip-full","ipset","iptables","iptables-mod-extra","iptables-mod-tproxy","kmod-crypto-hw-safexcel","kmod-gpio-button-hotplug","kmod-ipt-raw","kmod-leds-gpio","kmod-mt7915e","kmod-nf-nathelper","kmod-nf-nathelper-extra","kmod-tun","libc","libgcc","libustream-openssl","logd","luci","luci-app-accesscontrol","luci-app-arpbind","luci-app-autoreboot","luci-app-ddns","luci-app-filetransfer","luci-app-nlbwmon","luci-app-ssr-plus","luci-app-turboacc","luci-app-upnp","luci-app-vlmcsd","luci-app-vsftpd","luci-app-wol","luci-proto-ipv6","mtd","netifd","odhcp6c","odhcpd-ipv6only","opkg","ppp","ppp-mod-pppoe","procd","procd-seccomp","procd-ujail","uboot-envtools","uboot-envtools","uci","uclient-fetch","urandom-seed","urngd","wpad-openssl","wpad-openssl"],"metadata_version":1,"profiles":{"cmcc_rax3000m-nand":{"device_packages":["kmod-mt7981-firmware","mt7981-wo-firmware","kmod-usb3"],"image_prefix":"openwrt-mediatek-filogic-cmcc_rax3000m-nand","images":[{"filesystem":"squashfs","name":"openwrt-mediatek-filogic-cmcc_rax3000m-nand-squashfs-sysupgrade.bin","sha256":"fc82febb9464c2b27dd258718f7b4ed71d0c8ba8e9d538828f196bf6252430cc","sha256_unsigned":"dd795aabdc1665a421f13b56954aec2814a2c0cecbb56ce0e0256f23cfc6d998","type":"sysupgrade"},{"filesystem":"squashfs","name":"openwrt-mediatek-filogic-cmcc_rax3000m-nand-squashfs-factory.bin","sha256":"f647425ef6f906861056a45cb2dca1a5156ee9bde46528cb4a92150e22f48c74","sha256_unsigned":"f647425ef6f906861056a45cb2dca1a5156ee9bde46528cb4a92150e22f48c74","type":"factory"},{"filesystem":"initramfs","name":"openwrt-mediatek-filogic-cmcc_rax3000m-nand-initramfs-kernel.bin","sha256":"1d5ef81376062e5074e1b6ad98a9b0f85285484cd657940d09370323c189f91d","sha256_unsigned":"1d5ef81376062e5074e1b6ad98a9b0f85285484cd657940d09370323c189f91d","type":"kernel"}],"supported_devices":["cmcc,rax3000m-nand"],"titles":[{"model":"RAX3000M (NAND version)","vendor":"CMCC"}]}},"source_date_epoch":1730810168,"target":"mediatek/filogic","version_code":"r6979-d83c55af8","version_number":"SNAPSHOT"}" > ./bin/targets/mediatek/filogic/profiles.json
         mkdir -p ./bin/targets/mediatek/filogic/packages/ && echo "测试" > ./bin/targets/mediatek/filogic/packages/wwwwww.txt
         
         echo "======================="
@@ -106,12 +106,43 @@ jobs:
         echo "RELEASE_TAG=$release_tag" >> $GITHUB_OUTPUT
         echo "RELEASE_NAME=$release_name" >> $GITHUB_OUTPUT
 
+    - name: Release body
+      working-directory: ./openwrt
+      run: |
+        # 读取 profiles.json 文件内容
+        json_content=$(cat openwrt/artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/profiles.json)
+
+        # 解析需要的字段
+        version_number=$(echo "$json_content" | jq -r '.version_number')
+        arch_packages=$(echo "$json_content" | jq -r '.arch_packages')
+
+        # 获取 Titles 信息，显示在最前面
+        titles=$(echo "$json_content" | jq -r '.profiles.cmcc_rax300m-nand.titles[] | "\(.model) by \(.vendor)"')
+
+        # 获取 image_prefix
+        image_prefix=$(echo "$json_content" | jq -r '.profiles.cmcc_rax300m-nand.image_prefix')
+
+        # 解析 images 信息，简化输出格式
+        images=$(echo "$json_content" | jq -r '.profiles.cmcc_rax300m-nand.images[] | 
+            "* \(.name | gsub("openwrt"; "mzwrt")) (\(.type))\n  sha256: \(.sha256)\n  sha256 (unsigned): \(.sha256_unsigned)\n"')
+
+
+        # 拼接最终的 body 内容
+        body_content="**Title:** $titles\n\n
+        **Release Version:** $version_number\n\n
+        **Architectural Packages:** $arch_packages\n\n
+        **Image Prefix:** $image_prefix\n\n
+        **Firmware Images:**\n$images"
+
+        # 输出到 GitHub Release 的 body
+        echo "body=$body_content" >> $GITHUB_OUTPUT
+
+
       
     - name: Create versioned release directory
       working-directory: ./openwrt
       run: |
         mkdir -p ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
-        ls ./artifact
         #tar -czf ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
         cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
         # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
@@ -135,5 +166,5 @@ jobs:
         artifacts: openwrt/artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/*
         name: ${{ steps.generate_name.outputs.RELEASE_NAME }}
         tag: ${{ steps.generate_name.outputs.RELEASE_TAG }}
-        body: "This is the release of OpenWrt firmware for RAX3000M"  # Release的描述
+        body: ${{ steps.release_body.outputs.body }}  # Release的描述
         token: ${{ secrets.GITHUB_TOKEN }}
