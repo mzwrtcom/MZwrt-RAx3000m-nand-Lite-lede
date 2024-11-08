@@ -84,6 +84,7 @@ jobs:
 
 
         mkdir -p ./bin/targets/mediatek/filogic/ && echo "测试" > ./bin/targets/mediatek/filogic/yourfile.bin
+        mkdir -p ./bin/targets/mediatek/filogic/ && echo "测试" > ./bin/targets/mediatek/filogic/yourfile.txt
         mkdir -p ./bin/targets/mediatek/filogic/packages/ && echo "测试" > ./bin/targets/mediatek/filogic/packages/wwwwww.txt
         
         echo "======================="
@@ -126,7 +127,7 @@ jobs:
       uses: actions/upload-artifact@main
       with:
         name: CMCC-RAX3000M-OpenWrt
-        path: openwrt/artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/*.bin
+        path: openwrt/artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/*
 
     - name: Create Release & Upload
       uses: ncipollo/release-action@v1.14.0
