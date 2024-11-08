@@ -80,7 +80,7 @@ jobs:
     - name: Build firmware
       working-directory: ./openwrt
       run: |
-        make -j$(nproc) || make -j1 V=s
+        #make -j$(nproc) || make -j1 V=s
         echo "======================="
         echo "Space usage:"
         echo "======================="
@@ -106,7 +106,7 @@ jobs:
       run: |
         mkdir -p ./artifact/${{ env.RELEASE_NAME }}/
         ls ./artifact
-        tar -czf ./artifact/${{ env.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
+        #tar -czf ./artifact/${{ env.RELEASE_NAME }}/packages.tar.gz -C ./bin/targets/mediatek/filogic/ packages
         cp -r ./bin/targets/mediatek/filogic/* ./artifact/${{ env.RELEASE_NAME }}/
         # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
         find ./artifact/${{ env.RELEASE_NAME }}/ -type f -name "openwrt*" -exec bash -c '
