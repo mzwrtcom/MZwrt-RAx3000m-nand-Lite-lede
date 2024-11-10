@@ -75,7 +75,7 @@ jobs:
     - name: Build firmware
       working-directory: ./openwrt
       run: |
-        make -j$(nproc) 2>&1 | grep -E "(warning|error)"
+        make -j$(nproc) 2>&1 | grep -E "(warning|error)" || true
 
         echo "======================="
         echo "Space usage:"
