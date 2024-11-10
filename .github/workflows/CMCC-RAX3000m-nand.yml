@@ -110,7 +110,8 @@ jobs:
         ' bash {} +
 
         # 过滤出以 .bin 结尾的行，并将 openwrt 替换为 mzwrt
-        sha256sums_content=$(grep '\.bin' ./bin/targets/mediatek/filogic/sha256sums | sed 's/openwrt/mzwrt/g')
+        #sha256sums_content=$(grep '\.bin' ./bin/targets/mediatek/filogic/sha256sums | sed 's/openwrt/mzwrt/g')
+        sha256sums_content=$(grep '\.bin' ./bin/targets/mediatek/filogic/sha256sums | sed 's/openwrt/mzwrt/g' | sed 's/\(.*\) \*\(.*\)/\2|\1/')
 
         # 将修改后的内容保存为 GitHub 环境变量
         echo "sha256sums=$sha256sums_content" >> $GITHUB_OUTPUT
