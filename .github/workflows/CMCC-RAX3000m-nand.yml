@@ -129,8 +129,5 @@ jobs:
         name: ${{ steps.generate_name.outputs.RELEASE_NAME }}
         tag: ${{ steps.generate_name.outputs.RELEASE_TAG }}
         body: |
-         SHA-256: 
-         ```
-         ${{ env.sha256sums }}  # Release的描述
-         ```
+         CMCC-RAX3000M-nand
         token: ${{ secrets.GITHUB_TOKEN }}
