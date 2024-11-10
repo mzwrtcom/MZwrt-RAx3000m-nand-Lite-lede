@@ -130,5 +130,7 @@ jobs:
         tag: ${{ steps.generate_name.outputs.RELEASE_TAG }}
         body: |
          SHA-256: 
+         ```
          ${{ env.sha256sums }}  # Release的描述
+         ```
         token: ${{ secrets.GITHUB_TOKEN }}
