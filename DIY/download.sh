@@ -1,3 +1,7 @@
+#!/bin/bash
+#=================================================
+# MZwrt script
+#================================================= 
         rm -rf bin
         # 获取 GitHub 最新发布的版本（使用 GitHub API）
         latest_release_url="https://api.github.com/repos/mzwrtcom/MZwrt-RAx3000m-nand-Lite-lede/releases/latest"
@@ -9,3 +13,5 @@
         curl -L -o MzWrt_firmware.tar.gz $download_url
         # 解压下载的文件
         tar -xzvf MzWrt_firmware.tar.gz
+
+        exit 0
