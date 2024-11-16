@@ -38,7 +38,7 @@ jobs:
         sudo -E systemctl daemon-reload
         sudo -E apt clean
         sudo -E timedatectl set-timezone "Asia/Shanghai"
-        git config --global user.name 'GitHub Actions' && git config --global user.email 'waiquwang@gmail.com'
+        git config --global user.name 'GitHub Actions' && git config --global user.email '${{ secrets.GH_MAIL }}'
         
     - name: Clone source code
       env: 
@@ -100,21 +100,15 @@ jobs:
       working-directory: ./openwrt
       run: |
         mkdir -p ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
-        cp -r ./bin/targets/mediatek/filogic/*.bin ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
         # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
-        find ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/ -type f -name "openwrt*" -exec bash -c '
+        find ../bin/targets/mediatek/filogic/ -type f -name "openwrt*" -exec bash -c '
           for file; do
             new_name="${file//openwrt/MzWrt}"
             mv "$file" "$new_name"
         done
         ' bash {} +
-
-        # 过滤出以 .bin 结尾的行，并将 openwrt 替换为 mzwrt
-        sha256sums_content=$(grep '\.bin' ./bin/targets/mediatek/filogic/sha256sums | sed 's/openwrt/mzwrt/g' | sed 's/\(.*\) \*\(.*\)/\2=\1/')
-
-        # 将修改后的内容保存为 GitHub 环境变量
-        echo "sha256sums=$sha256sums_content" >> $GITHUB_ENV
-
+        tar -czvf MzWrt_firmware.tar.gz ./bin
+        mv MzWrt_firmware.tar.gz ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
 
     - name: Upload Firmwares
       uses: actions/upload-artifact@main
