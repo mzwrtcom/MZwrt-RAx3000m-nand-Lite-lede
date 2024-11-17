@@ -42,5 +42,6 @@ curl -L -o MzWrt_firmware.tar.gz $download_url
 # 解压下载的文件
 echo "Extracting MzWrt_firmware.tar.gz..."
 tar -xzvf MzWrt_firmware.tar.gz
+mv MzWrt_firmware/bin bin
 
 exit 0
