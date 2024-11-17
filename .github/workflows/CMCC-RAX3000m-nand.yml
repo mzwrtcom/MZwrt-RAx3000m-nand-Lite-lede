@@ -101,14 +101,14 @@ jobs:
       run: |
         mkdir -p ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
         # 在指定路径下找到所有以 openwrt 开头的文件，并替换文件名中的 openwrt 为 MzWrt
-        find ../bin/targets/mediatek/filogic/ -type f -name "openwrt*" -exec bash -c '
+        find ./bin/targets/mediatek/filogic/ -type f -name "openwrt*" -exec bash -c '
           for file; do
             new_name="${file//openwrt/MzWrt}"
             mv "$file" "$new_name"
         done
         ' bash {} +
         tar -czvf MzWrt_firmware.tar.gz ./bin
-        mv MzWrt_firmware.tar.gz ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
+        cp -r MzWrt_firmware.tar.gz ./artifact/${{ steps.generate_name.outputs.RELEASE_NAME }}/
 
     - name: Upload Firmwares
       uses: actions/upload-artifact@main
